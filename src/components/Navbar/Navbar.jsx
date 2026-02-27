@@ -6,10 +6,10 @@ import { PiForkKnifeFill } from "react-icons/pi";
 import { TbMenu2, TbMenu3 } from "react-icons/tb";
 
 const Navbar = () => {
-  const [showMenu, setShowMenu] = useState(false);
+  const [showOffre, setShowOffre] = useState(false);
 
-  const toggleMenu = () => {
-    setShowMenu(!showMenu);
+  const toggleOffre = () => {
+    setShowOffre(!showOffre);
   };
 
   const isLoggedIn = false;
@@ -40,8 +40,8 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link to="/menu" className='font-bold tracking-wider text-zinc-800 hover:text-orange-500 transition-colors'>
-              Menu
+            <Link to="/offre" className='font-bold tracking-wider text-zinc-800 hover:text-orange-500 transition-colors'>
+              Offre
             </Link>
           </li>
           <li>
@@ -86,10 +86,10 @@ const Navbar = () => {
           {/* HAMBURGER MOBILE */}
           <button
             className='md:hidden text-3xl text-zinc-800 cursor-pointer focus:outline-none'
-            onClick={toggleMenu}
-            aria-label="Toggle menu"
+            onClick={toggleoffre}
+            aria-label="Toggle offre"
           >
-            {showMenu ? <TbMenu3 /> : <TbMenu2 />}
+            {showOffre ? <TbMenu3 /> : <TbMenu2 />}
           </button>
         </div>
 
@@ -98,27 +98,27 @@ const Navbar = () => {
       {/* MOBILE MENU  */}
       <div
         className={`md:hidden fixed top-16 left-0 right-0 bg-white/95 backdrop-blur-lg shadow-lg transition-all duration-300 ease-in-out z-40 overflow-hidden ${
-          showMenu ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+          showOffre ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <ul className="flex flex-col items-center gap-y-6 py-8 px-6">
           <li>
-            <Link to="/" onClick={toggleMenu} className='font-bold text-lg text-zinc-800 hover:text-orange-500 transition-colors'>
+            <Link to="/" onClick={toggleOffre} className='font-bold text-lg text-zinc-800 hover:text-orange-500 transition-colors'>
               Home
             </Link>
           </li>
           <li>
-            <Link to="/about" onClick={toggleMenu} className='font-bold text-lg text-zinc-800 hover:text-orange-500 transition-colors'>
+            <Link to="/about" onClick={toggleOffre} className='font-bold text-lg text-zinc-800 hover:text-orange-500 transition-colors'>
               About Us
             </Link>
           </li>
           <li>
-            <Link to="/menu" onClick={toggleMenu} className='font-bold text-lg text-zinc-800 hover:text-orange-500 transition-colors'>
-              Menu
+            <Link to="/offre" onClick={toggleOffre} className='font-bold text-lg text-zinc-800 hover:text-orange-500 transition-colors'>
+              Offre
             </Link>
           </li>
           <li>
-            <Link to="/contact" onClick={toggleMenu} className='font-bold text-lg text-zinc-800 hover:text-orange-500 transition-colors'>
+            <Link to="/contact" onClick={toggleOffre} className='font-bold text-lg text-zinc-800 hover:text-orange-500 transition-colors'>
               Contact
             </Link>
           </li>

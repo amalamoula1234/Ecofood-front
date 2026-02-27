@@ -8,11 +8,11 @@ import Footer from './components/Footer/Footer';
 
 import Home from './components/Home/Home';
 import Contact from './components/Contact/Contact';
-import Menu from './components/Menu/menu';
+import Offre from './components/Offre/Offre';
 import About from './components/About/About';
 import Login from './pages/login';
-import Register from "./pages/register"
-import ForgotPassword from "./pages/ForgotPassword"
+import Register from "./pages/register";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
   return (
@@ -29,10 +29,13 @@ function App() {
             {/* Routes principales */}
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} /> {/* redirection facultative */}
-            <Route path="/menu" element={<Menu />} />
+            
             <Route path="/contact" element={<Contact />} />
 
             <Route path="/about" element={<About />} />
+
+            <Route path="/offre" element={<Offre />} />
+
 
             {/* Authentification */}
             <Route path="/login" element={<Login />} />
