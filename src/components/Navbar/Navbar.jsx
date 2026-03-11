@@ -40,8 +40,8 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link to="/offre" className='font-bold tracking-wider text-zinc-800 hover:text-orange-500 transition-colors'>
-              Offre
+            <Link to="/restaurant" className='font-bold tracking-wider text-zinc-800 hover:text-orange-500 transition-colors'>
+              Restaurant
             </Link>
           </li>
           <li>
@@ -50,6 +50,7 @@ const Navbar = () => {
             </Link>
           </li>
         </ul>
+          
 
         {/* NAV ACTION */}
         <div className='flex items-center gap-x-5 md:gap-x-7'>
@@ -86,7 +87,7 @@ const Navbar = () => {
           {/* HAMBURGER MOBILE */}
           <button
             className='md:hidden text-3xl text-zinc-800 cursor-pointer focus:outline-none'
-            onClick={toggleoffre}
+            onClick={toggleOffre}
             aria-label="Toggle offre"
           >
             {showOffre ? <TbMenu3 /> : <TbMenu2 />}

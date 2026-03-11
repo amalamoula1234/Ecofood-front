@@ -23,15 +23,42 @@ function Register() {
     role: "",
   });
 
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    // nfas5ou error ki y3amer champ
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await registerUser(formData);
-    alert("Inscription réussie");
+
+    let newErrors = {};
+    Object.keys(formData).forEach((key) => {
+      if (!formData[key]) newErrors[key] = "Veuillez remplir ce champ";
+    });
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) return; // ❌ ma yet3adach
+
+    try {
+      await registerUser(formData);
+      alert("Inscription réussie");
+    } catch (error) {
+      alert("Erreur lors de l'inscription");
+    }
   };
+
+  const inputStyle = (field) =>
+    `w-full pl-10 pr-4 py-2 border rounded-lg outline-none transition
+     ${
+       errors[field]
+         ? "border-orange-500 focus:ring-2 focus:ring-orange-500"
+         : "focus:ring-2 focus:ring-orange-400"
+     }`;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
@@ -44,7 +71,7 @@ function Register() {
         </h2>
 
         {/* Nom */}
-        <div>
+        <div className="mb-4">
           <label className="block mb-1 text-sm font-medium text-gray-700">
             Nom
           </label>
@@ -52,15 +79,19 @@ function Register() {
             <FaUser className="absolute top-3 left-3 text-gray-400" />
             <input
               name="nom"
+              value={formData.nom}
               onChange={handleChange}
               placeholder="Entrez votre nom"
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
+              className={inputStyle("nom")}
             />
           </div>
+          {errors.nom && (
+            <p className="text-orange-500 text-xs mt-1">{errors.nom}</p>
+          )}
         </div>
 
         {/* Prenom */}
-        <div>
+        <div className="mb-4">
           <label className="block mb-1 text-sm font-medium text-gray-700">
             Prenom
           </label>
@@ -68,15 +99,19 @@ function Register() {
             <FaUser className="absolute top-3 left-3 text-gray-400" />
             <input
               name="prenom"
+              value={formData.prenom}
               onChange={handleChange}
               placeholder="Entrez votre prénom"
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
+              className={inputStyle("prenom")}
             />
           </div>
+          {errors.prenom && (
+            <p className="text-orange-500 text-xs mt-1">{errors.prenom}</p>
+          )}
         </div>
 
         {/* Email */}
-        <div>
+        <div className="mb-4">
           <label className="block mb-1 text-sm font-medium text-gray-700">
             Email
           </label>
@@ -85,15 +120,19 @@ function Register() {
             <input
               name="email"
               type="email"
+              value={formData.email}
               onChange={handleChange}
               placeholder="Entrez votre email"
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
+              className={inputStyle("email")}
             />
           </div>
+          {errors.email && (
+            <p className="text-orange-500 text-xs mt-1">{errors.email}</p>
+          )}
         </div>
 
         {/* Telephone */}
-        <div>
+        <div className="mb-4">
           <label className="block mb-1 text-sm font-medium text-gray-700">
             Telephone
           </label>
@@ -101,31 +140,47 @@ function Register() {
             <FaPhone className="absolute top-3 left-3 text-gray-400" />
             <input
               name="telephone"
+              value={formData.telephone}
               onChange={handleChange}
               placeholder="Entrez votre numéro"
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
+              className={inputStyle("telephone")}
             />
           </div>
+          {errors.telephone && (
+            <p className="text-orange-500 text-xs mt-1">{errors.telephone}</p>
+          )}
         </div>
 
         {/* Role */}
-        <div>
+        <div className="mb-4">
           <label className="block mb-1 text-sm font-medium text-gray-700">
             Role
           </label>
           <div className="relative">
             <FaUserTag className="absolute top-3 left-3 text-gray-400" />
-            <input
+            <select
               name="role"
+              value={formData.role}
               onChange={handleChange}
-              placeholder="client / admin / restaurateur"
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
-            />
+              className={`w-full pl-10 pr-4 py-2 border rounded-lg outline-none appearance-none bg-white ${
+                errors.role
+                  ? "border-orange-500 focus:ring-2 focus:ring-orange-500"
+                  : "focus:ring-2 focus:ring-orange-400"
+              }`}
+            >
+              <option value="">-- Sélectionner un rôle --</option>
+              <option value="client">Client</option>
+              <option value="admin">Admin</option>
+              <option value="restaurateur">Restaurateur</option>
+            </select>
           </div>
+          {errors.role && (
+            <p className="text-orange-500 text-xs mt-1">{errors.role}</p>
+          )}
         </div>
 
         {/* Mot de passe */}
-        <div>
+        <div className="mb-4">
           <label className="block mb-1 text-sm font-medium text-gray-700">
             Mot de passe
           </label>
@@ -134,9 +189,10 @@ function Register() {
             <input
               name="mdp"
               type={showPassword ? "text" : "password"}
+              value={formData.mdp}
               onChange={handleChange}
               placeholder="Entrez votre mot de passe"
-              className="w-full pl-10 pr-10 py-2 border rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
+              className={inputStyle("mdp")}
             />
             <span
               onClick={() => setShowPassword(!showPassword)}
@@ -145,22 +201,9 @@ function Register() {
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
-        </div>
-
-        <div className="flex justify-between text-sm">
-          <Link
-            to="/forgot-password"
-            className="text-orange-500 hover:underline"
-          >
-            Mot de passe oublié ?
-          </Link>
-
-          <Link
-            to="/login"
-            className="text-gray-600 hover:underline"
-          >
-            Déjà un compte ?
-          </Link>
+          {errors.mdp && (
+            <p className="text-orange-500 text-xs mt-1">{errors.mdp}</p>
+          )}
         </div>
 
         {/* Button */}
@@ -170,6 +213,16 @@ function Register() {
         >
           Créer un compte
         </button>
+
+        <p className="text-center text-sm text-gray-600">
+          Vous avez déjà un compte ?{" "}
+          <Link
+            to="/login"
+            className="text-orange-500 font-semibold hover:underline"
+          >
+            Se connecter
+          </Link>
+        </p>
       </form>
     </div>
   );

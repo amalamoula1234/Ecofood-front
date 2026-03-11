@@ -35,7 +35,7 @@ const Footer = () => {
               </h2>
             </div>
             <p className="text-zinc-600 text-sm italic leading-relaxed">
-              Serving happiness since 2020
+              Serving happiness since 2026
             </p>
             <div className="flex items-center gap-3 mt-1">
               {socialLinks.map((item, index) => (
