@@ -14,7 +14,7 @@ export default function GestionRestaurants() {
 
   const fetchRestaurants = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/restaurant/liste");
+      const res = await axios.get("http://localhost:5000/api/restaurant/");
       setRestaurants(res.data);
     } catch (err) {
       console.log(err);
