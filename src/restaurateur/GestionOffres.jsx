@@ -61,7 +61,7 @@ function DeleteModal({ offre, onConfirm, onCancel }) {
 
 const CATEGORIES = ["Plat Principal", "Entrées", "Desserts", "Boissons", "Salades",];
 
-function OffreForm({ data, setData, onConfirm, onCancel, title, confirmLabel }) {
+function OffreForm({ data, setData, onConfirm, onCancel, title, confirmLabel, restaurants }) {
   return (
     <div className="fixed z-50 w-full max-w-2xl" style={{ top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
       <div className="bg-white rounded-xl shadow-2xl p-6 relative mx-4 max-h-[90vh] overflow-y-auto">
@@ -97,12 +97,18 @@ function OffreForm({ data, setData, onConfirm, onCancel, title, confirmLabel }) 
           {/* Restaurant */}
           <div>
             <label className="text-xs text-gray-500">Restaurant *</label>
-            <input
+            <select
               value={data.restaurant}
               onChange={e => setData(p => ({ ...p, restaurant: e.target.value }))}
-              placeholder="Nom du restaurant"
-              className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none"
-            />
+              className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none bg-white"
+            >
+              <option value="">-- Sélectionner un restaurant --</option>
+              {restaurants && restaurants.length > 0 ? (
+                restaurants.map(r => <option key={r._id} value={r._id}>{r.nom}</option>)
+              ) : (
+                <option disabled>Aucun restaurant disponible</option>
+              )}
+            </select>
           </div>
 
           {/* Description */}
@@ -226,6 +232,7 @@ function OffreForm({ data, setData, onConfirm, onCancel, title, confirmLabel }) 
   );
 }
 
+
 const emptyOffre = {
   nom: "", categorie: "", description: "", prix: "", prixAncien: "",
   dureeHeures: "", dateDebut: "", disponibilite: "disponible", image: "", restaurant: ""
@@ -241,10 +248,28 @@ export default function GestionOffres() {
   const [editingOffre, setEditingOffre] = useState(null);
   const [editData, setEditData] = useState({});
   const [showAddForm, setShowAddForm] = useState(false);
+
   const [newOffre, setNewOffre] = useState({ ...emptyOffre });
   const [deletingOffre, setDeletingOffre] = useState(null);
   const [toasts, setToasts] = useState([]);
+  const [restaurants, setRestaurants] = useState([]);
 
+  useEffect(() => {
+    fetch("http://localhost:5000/api/restaurant/")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setRestaurants(data);
+        } else {
+          console.error("Erreur : la réponse n'est pas un tableau", data);
+          setRestaurants([]);
+        }
+      })
+      .catch(err => {
+        console.error("Erreur fetch restaurants:", err);
+        setRestaurants([]);
+      });
+  }, []);
   const addToast = (message) => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, message }]);
@@ -336,6 +361,7 @@ export default function GestionOffres() {
                 onCancel={() => setShowAddForm(false)}
                 title="Ajouter une offre"
                 confirmLabel="Confirmer"
+                restaurants={restaurants}
               />
             </>
           )}
