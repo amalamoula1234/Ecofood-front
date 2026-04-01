@@ -16,7 +16,7 @@ import Register from "./pages/Register";
 
 {/* dashboard Restaurateur */ }
 import DashboardRestaurateur from './restaurateur/DashboardRestaurateur';
-
+import MesCommandes from "./restaurateur/MesCommandes";
 
 {/* dashboard Admin */ }
 import DashboardAdmin from './admin/DashboardAdmin';
@@ -67,9 +67,10 @@ function AppContent() {
           {/* dashboard Admin */}
           <Route path="/admin" element={<DashboardAdmin />} />
           <Route path="/admin/user" element={<GestionUsers />} />
+
           {/* dashboard Restaurateur */}
           <Route path="/restaurateur" element={<DashboardRestaurateur />} />
-
+          <Route path="/restaurateur/commandes" element={<MesCommandes />} />
 
 
 

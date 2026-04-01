@@ -1,5 +1,6 @@
 import { useState } from "react";
 import GestionOffres from "./GestionOffres";
+import MesCommandes from "./MesCommandes";
 import {
   LayoutDashboard,
   Tag,
@@ -163,15 +164,7 @@ export default function DashboardRestaurateur() {
 
             {/* COMMANDES */}
             {activeItem === "commandes" && (
-              <div className="bg-white rounded-2xl p-7" style={{ border: "1.5px solid #EDEBE8" }}>
-                <h2 className="font-syne font-bold text-base mb-2">
-                  Gestion des commandes
-                </h2>
-
-                <p className="text-sm text-gray-400">
-                  Liste des commandes à venir...
-                </p>
-              </div>
+              <MesCommandes />
             )}
 
           </main>
