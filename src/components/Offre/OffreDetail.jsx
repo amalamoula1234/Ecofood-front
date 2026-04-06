@@ -30,30 +30,59 @@ const OffreDetail = () => {
       });
   }, [id, navigate, location.pathname]);
     // ✅ HNEH DAKHEL COMPONENT
-  const handleCheckout = async () => {
-    if (!offre) return;
+const handleCheckout = async () => {
+  if (!offre) return;
 
-    try {
-      const response = await fetch(
-        "http://localhost:5000/create-checkout-session",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-           offre: offre
-          }),
-        }
-      );
+  try {
+    const token = localStorage.getItem("token");
 
-      const data = await response.json();
+    // ✅ Décoder le JWT pour avoir le vrai userId
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const userId = payload.id || payload._id || payload.userId;
 
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error("Payment Error:", error);
+    // 🔥 1. CRÉER la commande avec le vrai client
+    const cmdRes = await fetch("http://localhost:5000/api/commande", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        offreId: offre._id,
+        client: userId,    // ✅ vrai ObjectId du user
+        total: offre.prix,
+      }),
+    });
+
+    if (!cmdRes.ok) {
+      const cmdErr = await cmdRes.json();
+      throw new Error("Erreur commande: " + cmdErr.message);
     }
-  };
+
+    console.log("✅ Commande créée");
+
+    // 🔥 2. CRÉER la session Stripe
+    const stripeRes = await fetch("http://localhost:5000/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ offre }),
+    });
+
+    if (!stripeRes.ok) {
+      const stripeErr = await stripeRes.json();
+      throw new Error("Erreur Stripe: " + stripeErr.error);
+    }
+
+    const data = await stripeRes.json();
+
+    // 🔥 3. REDIRECT vers Stripe
+    if (data.url) {
+      window.location.href = data.url;
+    }
+
+  } catch (error) {
+    console.error("❌ Erreur checkout:", error.message);
+    alert(error.message); // 👈 affiche l'erreur exacte
+  }
+};
+
 
   if (loading)
     return (
@@ -95,6 +124,7 @@ const OffreDetail = () => {
               alt={offre.nom}
               className="w-full h-72 object-cover"
             />
+            
           ) : (
             <div className="w-full h-72 bg-orange-100 flex items-center justify-center">
               <span className="text-orange-300 text-8xl">🍽️</span>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Trash2, Pencil, Plus, X, Check, Settings2, Bell, Tag, Clock, Calendar, Image } from "lucide-react";
+import { Trash2, Pencil, Plus, X, Check, Settings2, Bell, Tag, Image } from "lucide-react";
 
 function Toast({ toasts, removeToast }) {
   return (
@@ -59,7 +59,7 @@ function DeleteModal({ offre, onConfirm, onCancel }) {
   );
 }
 
-const CATEGORIES = ["Plat Principal", "Entrées", "Desserts", "Boissons", "Salades",];
+const CATEGORIES = ["Plat Principal", "Entrées", "Desserts", "Boissons", "Salades"];
 
 function OffreForm({ data, setData, onConfirm, onCancel, title, confirmLabel, restaurants }) {
   return (
@@ -113,7 +113,7 @@ function OffreForm({ data, setData, onConfirm, onCancel, title, confirmLabel, re
 
           {/* Description */}
           <div className="col-span-2">
-            <label className="text-xs text-gray-500">Description</label>
+            <label className="text-xs text-gray-500">Description *</label>
             <textarea
               value={data.description}
               onChange={e => setData(p => ({ ...p, description: e.target.value }))}
@@ -151,63 +151,20 @@ function OffreForm({ data, setData, onConfirm, onCancel, title, confirmLabel, re
             />
           </div>
 
-          {/* Durée Heures */}
-          <div>
-            <label className="text-xs text-gray-500">Durée (heures)</label>
-            <input
-              type="number"
-              value={data.dureeHeures}
-              onChange={e => setData(p => ({ ...p, dureeHeures: e.target.value }))}
-              placeholder="Ex: 2"
-              min="0"
-              step="0.5"
-              className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none"
-            />
-          </div>
-
-          {/* Date Début */}
-          <div>
-            <label className="text-xs text-gray-500">Date de début</label>
-            <input
-              type="date"
-              value={data.dateDebut}
-              onChange={e => setData(p => ({ ...p, dateDebut: e.target.value }))}
-              className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none"
-            />
-          </div>
-
-          {/* Disponibilité */}
-          <div>
-            <label className="text-xs text-gray-500">Disponibilité</label>
-            <select
-              value={data.disponibilite}
-              onChange={e => setData(p => ({ ...p, disponibilite: e.target.value }))}
-              className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none bg-white"
-            >
-              <option value="disponible">Disponible</option>
-              <option value="indisponible">Indisponible</option>
-              <option value="limité">Limité</option>
-            </select>
-          </div>
-
           {/* Image Upload */}
           <div className="col-span-2">
-            <label className="text-xs text-gray-500">Image du produit</label>
-
+            <label className="text-xs text-gray-500">Image du offre</label>
             <input
               type="file"
               accept="image/*"
               onChange={e => {
                 const file = e.target.files[0];
                 if (file) {
-                  // Créer URL temporaire pour preview
                   setData(p => ({ ...p, imageFile: file, imagePreview: URL.createObjectURL(file) }));
                 }
               }}
               className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none"
             />
-
-            {/* Preview de l'image */}
             {data.imagePreview && (
               <div className="mt-2">
                 <img
@@ -218,6 +175,7 @@ function OffreForm({ data, setData, onConfirm, onCancel, title, confirmLabel, re
               </div>
             )}
           </div>
+
           <div className="col-span-2 flex justify-end gap-3 mt-2">
             <button onClick={onCancel} className="px-5 py-2 rounded-lg border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors">
               Annuler
@@ -232,15 +190,8 @@ function OffreForm({ data, setData, onConfirm, onCancel, title, confirmLabel, re
   );
 }
 
-
 const emptyOffre = {
-  nom: "", categorie: "", description: "", prix: "", prixAncien: "",
-  dureeHeures: "", dateDebut: "", disponibilite: "disponible", image: "", restaurant: ""
-};
-
-const disponibiliteStyle = {
-  disponible: "bg-green-100 text-green-600",
-  indisponible: "bg-red-100 text-red-600",
+  nom: "", categorie: "", description: "", prix: "", prixAncien: "", image: "", restaurant: ""
 };
 
 export default function GestionOffres() {
@@ -248,7 +199,6 @@ export default function GestionOffres() {
   const [editingOffre, setEditingOffre] = useState(null);
   const [editData, setEditData] = useState({});
   const [showAddForm, setShowAddForm] = useState(false);
-
   const [newOffre, setNewOffre] = useState({ ...emptyOffre });
   const [deletingOffre, setDeletingOffre] = useState(null);
   const [toasts, setToasts] = useState([]);
@@ -261,15 +211,12 @@ export default function GestionOffres() {
         if (Array.isArray(data)) {
           setRestaurants(data);
         } else {
-          console.error("Erreur : la réponse n'est pas un tableau", data);
           setRestaurants([]);
         }
       })
-      .catch(err => {
-        console.error("Erreur fetch restaurants:", err);
-        setRestaurants([]);
-      });
+      .catch(() => setRestaurants([]));
   }, []);
+
   const addToast = (message) => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, message }]);
@@ -309,10 +256,13 @@ export default function GestionOffres() {
   const startEdit = (offre) => {
     setEditingOffre(offre);
     setEditData({
-      nom: offre.nom, categorie: offre.categorie, description: offre.description,
-      prix: offre.prix, prixAncien: offre.prixAncien || "", dureeHeures: offre.dureeHeures || "",
-      dateDebut: offre.dateDebut ? offre.dateDebut.slice(0, 10) : "",
-      disponibilite: offre.disponibilite, image: offre.image || "", restaurant: offre.restaurant
+      nom: offre.nom,
+      categorie: offre.categorie,
+      description: offre.description,
+      prix: offre.prix,
+      prixAncien: offre.prixAncien || "",
+      image: offre.image || "",
+      restaurant: offre.restaurant,
     });
   };
 
@@ -327,17 +277,14 @@ export default function GestionOffres() {
     addToast("Modification enregistrée avec succès");
   };
 
-  const discountPercent = (prix, prixAncien) => {
-    if (!prixAncien || prixAncien <= prix) return null;
-    return Math.round((1 - prix / prixAncien) * 100);
-  };
+  
 
   return (
     <>
       <Toast toasts={toasts} removeToast={removeToast} />
 
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-8">
-        <div className="w-full max-w-6xl bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg overflow-hidden">
 
           {/* Header */}
           <div className="bg-white px-8 py-5 flex items-center justify-between border-b border-gray-100">
@@ -384,6 +331,7 @@ export default function GestionOffres() {
                   onCancel={() => setEditingOffre(null)}
                   title="Modifier l'offre"
                   confirmLabel="Valider"
+                  restaurants={restaurants}
                 />
               </>
             )}
@@ -392,7 +340,7 @@ export default function GestionOffres() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b-2 border-gray-100">
-                    {["Image", "Nom", "Catégorie", "Restaurant", "Prix", "Durée", "Date début", "Disponibilité"].map(h => (
+                    {["Image", "Nom", "Catégorie", "Restaurant", "Prix"].map(h => (
                       <th key={h} className="text-left px-5 py-4 text-gray-400 font-semibold text-xs uppercase tracking-wider">{h}</th>
                     ))}
                     <th className="text-left px-5 py-4 text-gray-400 font-semibold text-xs uppercase tracking-wider">
@@ -402,7 +350,6 @@ export default function GestionOffres() {
                 </thead>
                 <tbody>
                   {offres.map((offre, i) => {
-                    const discount = discountPercent(offre.prix, offre.prixAncien);
                     return (
                       <tr key={offre._id} className={`border-b border-gray-50 hover:bg-orange-50 transition-colors ${i % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
                         {/* Image */}
@@ -438,38 +385,12 @@ export default function GestionOffres() {
                         {/* Prix */}
                         <td className="px-5 py-3">
                           <div className="flex flex-col">
-                            <span className="font-semibold text-gray-800">{offre.prix} TND</span>
+                            <span className="font-semibold text-gray-800">{offre.prix} TD</span>
                             {offre.prixAncien && (
-                              <span className="text-xs text-gray-400 line-through">{offre.prixAncien} TND</span>
+                              <span className="text-xs text-gray-400 line-through">{offre.prixAncien} TD</span>
                             )}
-                            {discount && (
-                              <span className="text-xs font-bold text-green-600">-{discount}%</span>
-                            )}
+                            
                           </div>
-                        </td>
-                        {/* Durée */}
-                        <td className="px-5 py-3 text-gray-500">
-                          {offre.dureeHeures ? (
-                            <span className="flex items-center gap-1">
-                              <Clock size={12} className="text-orange-400" />
-                              {offre.dureeHeures}h
-                            </span>
-                          ) : "—"}
-                        </td>
-                        {/* Date début */}
-                        <td className="px-5 py-3 text-gray-500">
-                          {offre.dateDebut ? (
-                            <span className="flex items-center gap-1">
-                              <Calendar size={12} className="text-orange-400" />
-                              {new Date(offre.dateDebut).toLocaleDateString("fr-FR")}
-                            </span>
-                          ) : "—"}
-                        </td>
-                        {/* Disponibilité */}
-                        <td className="px-5 py-3">
-                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${disponibiliteStyle[offre.disponibilite] || "bg-gray-100 text-gray-500"}`}>
-                            {offre.disponibilite || "—"}
-                          </span>
                         </td>
                         {/* Actions */}
                         <td className="px-5 py-3">
