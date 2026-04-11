@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../api/axios";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
 
 
 
@@ -18,8 +19,8 @@ const OffreDetail = () => {
       navigate("/login", { state: { from: location.pathname } });
       return;
     }
-     axios
-      .get(`http://localhost:5000/api/offre/${id}`)
+    api
+      .get(`/offre/${id}`)
       .then((res) => {
         setOffre(res.data);
         setLoading(false);
@@ -35,25 +36,14 @@ const handleCheckout = async () => {
 
   try {
     const token = localStorage.getItem("token");
-
-    // ✅ Décoder le JWT pour avoir le vrai userId
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const userId = payload.id || payload._id || payload.userId;
-
-    // 🔥 1. CRÉER la commande avec le vrai client
-    const cmdRes = await fetch("http://localhost:5000/api/commande", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        offreId: offre._id,
-        client: userId,    // ✅ vrai ObjectId du user
-        total: offre.prix,
-      }),
+    // 🔥 1. CRÉER la commande
+    const cmdRes = await api.post("/commande", {
+      offreId: offre._id,
+      total: offre.prix,
     });
 
-    if (!cmdRes.ok) {
-      const cmdErr = await cmdRes.json();
-      throw new Error("Erreur commande: " + cmdErr.message);
+    if (cmdRes.status !== 201) {
+      throw new Error("Erreur commande");
     }
 
     console.log("✅ Commande créée");
@@ -79,7 +69,11 @@ const handleCheckout = async () => {
 
   } catch (error) {
     console.error("❌ Erreur checkout:", error.message);
-    alert(error.message); // 👈 affiche l'erreur exacte
+    Swal.fire({
+      icon: "error",
+      title: "Erreur",
+      text: error.message,
+    });
   }
 };
 

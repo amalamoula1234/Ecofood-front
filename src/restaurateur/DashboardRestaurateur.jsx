@@ -1,6 +1,7 @@
 import { useState } from "react";
 import GestionOffres from "./GestionOffres";
 import MesCommandes from "./MesCommandes";
+import NotificationPanel from "../components/NotificationPanel";
 import {
   LayoutDashboard,
   Tag,
@@ -11,7 +12,7 @@ import {
 import { Link } from "react-router-dom";
 import { PiForkKnifeFill } from "react-icons/pi";
 
-const restaurateur = { email: "amal@gmail.com", nom: "Amal Ben Ali", isOnline: true };
+const restaurateur = JSON.parse(localStorage.getItem("user")) || { email: "guest@ecofood.com", nom: "Restaurateur" };
 
 const menuItems = [
   { label: "Dashboard", icon: LayoutDashboard, id: "dashboard" },
@@ -23,6 +24,11 @@ export default function DashboardRestaurateur() {
 
   const [activeItem, setActiveItem] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = "/login";
+  };
 
   const initial = restaurateur.email.charAt(0).toUpperCase();
 
@@ -123,6 +129,7 @@ export default function DashboardRestaurateur() {
           <div className="px-3 pb-6 pt-4" style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }}>
 
             <button
+              onClick={handleLogout}
               className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl border-none cursor-pointer transition-all duration-200 font-dm text-sm"
               style={{
                 background: "transparent",
@@ -140,6 +147,11 @@ export default function DashboardRestaurateur() {
 
         {/* MAIN */}
         <div className="flex-1 flex flex-col overflow-hidden">
+          
+          {/* TOPBAR */}
+          <header className="h-14 bg-white border-b border-gray-100 flex items-center justify-end px-8 flex-shrink-0">
+             <NotificationPanel />
+          </header>
 
           {/* CONTENT */}
           <main className="content flex-1 overflow-y-auto p-8">

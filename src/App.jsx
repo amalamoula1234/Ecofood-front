@@ -24,6 +24,8 @@ import GestionUsers from "./admin/GestionUsers";
 import Restaurant from './components/Restaurant/restaurant';
 import RestaurantDetail from './components/Restaurant/restaurantdetail';
 
+import ProtectedRoute from './components/ProtectedRoute';
+
 // ✅ Composant séparé pour utiliser useLocation (doit être INSIDE BrowserRouter)
 function AppContent() {
   const location = useLocation();
@@ -65,12 +67,12 @@ function AppContent() {
 
 
           {/* dashboard Admin */}
-          <Route path="/admin" element={<DashboardAdmin />} />
-          <Route path="/admin/user" element={<GestionUsers />} />
+          <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><DashboardAdmin /></ProtectedRoute>} />
+          <Route path="/admin/user" element={<ProtectedRoute allowedRoles={['admin']}><GestionUsers /></ProtectedRoute>} />
 
           {/* dashboard Restaurateur */}
-          <Route path="/restaurateur" element={<DashboardRestaurateur />} />
-          <Route path="/restaurateur/commandes" element={<MesCommandes />} />
+          <Route path="/restaurateur" element={<ProtectedRoute allowedRoles={['restaurateur']}><DashboardRestaurateur /></ProtectedRoute>} />
+          <Route path="/restaurateur/commandes" element={<ProtectedRoute allowedRoles={['restaurateur']}><MesCommandes /></ProtectedRoute>} />
 
 
 

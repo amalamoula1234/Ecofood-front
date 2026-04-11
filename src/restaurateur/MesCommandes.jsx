@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { HiOutlineClipboardList } from "react-icons/hi";
+import Swal from "sweetalert2";
 
 export default function MesCommandes() {
   const [commandes, setCommandes] = useState([]);
@@ -11,7 +12,7 @@ export default function MesCommandes() {
   // 🔥 FETCH COMMANDES
   const fetchCommandes = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/commande/liste");
+      const res = await api.get("/commande/mes-commandes");
       setCommandes(res.data);
     } catch (err) {
       setError(err.message);
@@ -32,13 +33,25 @@ export default function MesCommandes() {
   // ➤ UPDATE STATUT
   const handleStatut = async (id, newStatut) => {
     try {
-      await axios.patch(`http://localhost:5000/api/commande/${id}/statut`, {
+      await api.patch(`/commande/${id}/statut`, {
         statut: newStatut,
       });
       fetchCommandes();
+      Swal.fire({
+        icon: 'success',
+        title: 'Statut mis à jour',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      });
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de la mise à jour du statut");
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Erreur lors de la mise à jour du statut',
+      });
     }
   };
 

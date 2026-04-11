@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { loginUser } from "../services/authservices";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -28,6 +29,14 @@ function Login() {
       // stocker token et info utilisateur
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Heureux de vous revoir !',
+        text: `Bienvenue ${user.nom}`,
+        timer: 1500,
+        showConfirmButton: false
+      });
 
       // ✅ redirection intelligente
       const from = location.state?.from; // page protégée

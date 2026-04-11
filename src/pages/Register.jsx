@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../services/authservices";
+import Swal from "sweetalert2";
 import {
   FaUser,
   FaEnvelope,
@@ -12,6 +13,7 @@ import {
 } from "react-icons/fa";
 
 function Register() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -46,9 +48,19 @@ function Register() {
 
     try {
       await registerUser(formData);
-      alert("Inscription réussie");
+      Swal.fire({
+        icon: 'success',
+        title: 'Succès',
+        text: 'Inscription réussie',
+      }).then(() => {
+        navigate('/login');
+      });
     } catch (error) {
-      alert("Erreur lors de l'inscription");
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: "Erreur lors de l'inscription",
+      });
     }
   };
 

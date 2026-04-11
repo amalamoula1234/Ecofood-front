@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Trash2, Pencil, UserPlus, X, Check, Settings2, Bell } from "lucide-react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import api from "../api/axios";
+import Swal from "sweetalert2";
 
 function Toast({ toasts, removeToast }) {
   return (
@@ -114,40 +116,53 @@ export default function GestionUsers() {
   const [toasts, setToasts] = useState([]);
   const [showNewPassword, setShowNewPassword] = useState(false);
 
-  const addToast = (message) => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, message }]);
-    setTimeout(() => removeToast(id), 4000);
+  const addToast = (message, icon = 'success') => {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      icon: icon,
+      title: message
+    });
   };
-  const removeToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
+  const removeToast = (id) => {}; // No longer needed but kept for minimal refactor impact if called elsewhere
 
   const fetchUsers = async () => {
-    const res = await fetch("http://localhost:5000/api/user/liste");
-    const data = await res.json();
-    setUsers(data);
+    try {
+      const res = await api.get("/user/liste");
+      setUsers(res.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => { fetchUsers(); }, []);
 
   const ajouterUser = async () => {
     if (!newUser.nom || !newUser.email || !newUser.mdp) return;
-    await fetch("http://localhost:5000/api/user/ajouter", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newUser),
-    });
-    fetchUsers();
-    setNewUser({ nom: "", prenom: "", email: "", mdp: "", telephone: "", role: "client" });
-    setShowAddForm(false);
-    addToast("Utilisateur ajouté avec succès");
+    try {
+      await api.post("/user/ajouter", newUser);
+      fetchUsers();
+      setNewUser({ nom: "", prenom: "", email: "", mdp: "", telephone: "", role: "client" });
+      setShowAddForm(false);
+      addToast("Utilisateur ajouté avec succès");
+    } catch (err) {
+      addToast("Erreur lors de l'ajout", 'error');
+    }
   };
 
   const supprimerUser = async () => {
     const user = deletingUser;
-    await fetch(`http://localhost:5000/api/user/${user._id}`, { method: "DELETE" });
-    fetchUsers();
-    setDeletingUser(null);
-    addToast("Suppression effectuée avec succès");
+    try {
+      await api.delete(`/user/${user._id}`);
+      fetchUsers();
+      setDeletingUser(null);
+      addToast("Suppression effectuée avec succès");
+    } catch (err) {
+      addToast("Erreur lors de la suppression", 'error');
+    }
   };
 
   const startEdit = (user) => {
@@ -156,14 +171,14 @@ export default function GestionUsers() {
   };
 
   const saveEdit = async () => {
-    await fetch(`http://localhost:5000/api/user/${editingUser._id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(editData),
-    });
-    fetchUsers();
-    setEditingUser(null);
-    addToast("Modification enregistrée avec succès");
+    try {
+      await api.put(`/user/${editingUser._id}`, editData);
+      fetchUsers();
+      setEditingUser(null);
+      addToast("Modification enregistrée avec succès");
+    } catch (err) {
+      addToast("Erreur lors de la modification", 'error');
+    }
   };
 
   return (

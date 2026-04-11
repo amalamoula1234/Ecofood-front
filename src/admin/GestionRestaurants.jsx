@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
+import Swal from "sweetalert2";
 
 export default function GestionRestaurants() {
   const [restaurants, setRestaurants] = useState([]);
@@ -15,30 +16,52 @@ export default function GestionRestaurants() {
 
   const fetchRestaurants = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/restaurant/");
+      const res = await api.get("/restaurant/");
       setRestaurants(res.data);
-    } catch (err) { console.log(err); }
+    } catch (err) { 
+      console.log(err);
+      Swal.fire('Erreur', 'Impossible de charger les restaurants', 'error');
+    }
   };
 
   const fetchRestaurateurs = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/user/restaurateur/liste");
+      const res = await api.get("/user/restaurateur/liste");
       setRestaurateurs(res.data);
-    } catch (err) { console.log(err); }
+    } catch (err) { 
+      console.log(err); 
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/restaurant/${editingId}`, form);
+        await api.put(`/restaurant/${editingId}`, form);
+        Swal.fire({
+          icon: 'success',
+          title: 'Modifié !',
+          text: 'Le restaurant a été mis à jour.',
+          timer: 2000,
+          showConfirmButton: false
+        });
       } else {
-        await axios.post("http://localhost:5000/api/restaurant/ajouter", form);
+        await api.post("/restaurant/", form); // fixed endpoint to match standard
+        Swal.fire({
+          icon: 'success',
+          title: 'Ajouté !',
+          text: 'Le restaurant a été créé avec succès.',
+          timer: 2000,
+          showConfirmButton: false
+        });
       }
       setForm({ nom: "", adresse: "", telephone: "", type_cuisine: "", restaurateur: "", photo: "" });
       setEditingId(null);
       fetchRestaurants();
-    } catch (err) { console.log(err); }
+    } catch (err) { 
+      console.log(err);
+      Swal.fire('Erreur', 'Une erreur est survenue', 'error');
+    }
   };
 
   const handleEdit = (resto) => {
@@ -62,9 +85,29 @@ export default function GestionRestaurants() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Voulez-vous vraiment supprimer ce restaurant ?")) {
-      await axios.delete(`http://localhost:5000/api/restaurant/${id}`);
-      fetchRestaurants();
+    const result = await Swal.fire({
+      title: 'Êtes-vous sûr ?',
+      text: "Vous ne pourrez pas revenir en arrière !",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f97316',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui, supprimer !',
+      cancelButtonText: 'Annuler'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/restaurant/${id}`);
+        fetchRestaurants();
+        Swal.fire(
+          'Supprimé !',
+          'Le restaurant a été supprimé.',
+          'success'
+        );
+      } catch (err) {
+        Swal.fire('Erreur', 'Impossible de supprimer le restaurant', 'error');
+      }
     }
   };
 

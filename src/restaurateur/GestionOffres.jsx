@@ -1,31 +1,10 @@
 import { useEffect, useState } from "react";
-import { Trash2, Pencil, Plus, X, Check, Settings2, Bell, Tag, Image } from "lucide-react";
+import { Trash2, Pencil, Plus, X, Check, Settings2, Bell, Tag, Image as ImageIcon } from "lucide-react";
+import api from "../api/axios";
+import Swal from "sweetalert2";
 
-function Toast({ toasts, removeToast }) {
-  return (
-    <div className="fixed top-5 right-5 z-50 flex flex-col gap-3">
-      {toasts.map((toast) => (
-        <div
-          key={toast.id}
-          className="bg-white border-l-4 border-orange-500 shadow-xl rounded-xl p-4 w-80 animate-slideIn"
-        >
-          <div className="flex items-start gap-3">
-            <div className="bg-orange-100 p-2 rounded-full">
-              <Bell size={18} className="text-orange-500" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-gray-800">Notification</p>
-              <p className="text-xs text-gray-500 mt-1">{toast.message}</p>
-            </div>
-            <button onClick={() => removeToast(toast.id)} className="text-gray-400 hover:text-gray-600">
-              <X size={15} />
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+// Toast removed as we use Swal now
+
 
 function DeleteModal({ offre, onConfirm, onCancel }) {
   return (
@@ -61,134 +40,77 @@ function DeleteModal({ offre, onConfirm, onCancel }) {
 
 const CATEGORIES = ["Plat Principal", "Entrées", "Desserts", "Boissons", "Salades"];
 
-function OffreForm({ data, setData, onConfirm, onCancel, title, confirmLabel, restaurants }) {
-  return (
-    <div className="fixed z-50 w-full max-w-2xl" style={{ top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
+const OffreForm = ({ data, setData, onConfirm, onCancel, title, confirmLabel, restaurants }) => (
+  <div className="fixed z-50 w-full max-w-2xl" style={{ top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
       <div className="bg-white rounded-xl shadow-2xl p-6 relative mx-4 max-h-[90vh] overflow-y-auto">
         <button onClick={onCancel} className="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
           <X size={16} />
         </button>
         <h2 className="text-base font-semibold text-gray-800 mb-5">{title}</h2>
         <div className="grid grid-cols-2 gap-4">
-          {/* Nom */}
           <div className="col-span-2">
-            <label className="text-xs text-gray-500">Nom de l'offre *</label>
+            <label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Nom de l'offre *</label>
             <input
               value={data.nom}
               onChange={e => setData(p => ({ ...p, nom: e.target.value }))}
               placeholder="Ex: Menu Ramadan Spécial"
-              className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none"
+              className="w-full mt-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-orange-400 outline-none transition-all shadow-sm"
             />
           </div>
-
-          {/* Catégorie */}
           <div>
-            <label className="text-xs text-gray-500">Catégorie *</label>
+            <label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Catégorie *</label>
             <select
               value={data.categorie}
               onChange={e => setData(p => ({ ...p, categorie: e.target.value }))}
-              className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none bg-white"
+              className="w-full mt-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-orange-400 outline-none bg-white transition-all shadow-sm"
             >
               <option value="">-- Sélectionner --</option>
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
-
-          {/* Restaurant */}
           <div>
-            <label className="text-xs text-gray-500">Restaurant *</label>
+            <label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Restaurant *</label>
             <select
               value={data.restaurant}
               onChange={e => setData(p => ({ ...p, restaurant: e.target.value }))}
-              className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none bg-white"
+              className="w-full mt-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-orange-400 outline-none bg-white transition-all shadow-sm"
             >
-              <option value="">-- Sélectionner un restaurant --</option>
-              {restaurants && restaurants.length > 0 ? (
-                restaurants.map(r => <option key={r._id} value={r._id}>{r.nom}</option>)
-              ) : (
-                <option disabled>Aucun restaurant disponible</option>
-              )}
+              <option value="">-- Vos restaurants --</option>
+              {restaurants.map(r => <option key={r._id} value={r._id}>{r.nom}</option>)}
             </select>
           </div>
-
-          {/* Description */}
           <div className="col-span-2">
-            <label className="text-xs text-gray-500">Description *</label>
+            <label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Description *</label>
             <textarea
               value={data.description}
               onChange={e => setData(p => ({ ...p, description: e.target.value }))}
               placeholder="Décrivez l'offre..."
               rows={3}
-              className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none resize-none"
+              className="w-full mt-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-orange-400 outline-none resize-none transition-all shadow-sm"
             />
           </div>
-
-          {/* Prix */}
           <div>
-            <label className="text-xs text-gray-500">Prix (TD) *</label>
+            <label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Prix (TD) *</label>
             <input
               type="number"
               value={data.prix}
               onChange={e => setData(p => ({ ...p, prix: e.target.value }))}
               placeholder="0.00"
-              min="0"
-              step="0.1"
-              className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none"
+              className="w-full mt-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:border-orange-400 outline-none transition-all shadow-sm"
             />
           </div>
-
-          {/* Prix Ancien */}
-          <div>
-            <label className="text-xs text-gray-500">Ancien Prix (TD)</label>
-            <input
-              type="number"
-              value={data.prixAncien}
-              onChange={e => setData(p => ({ ...p, prixAncien: e.target.value }))}
-              placeholder="0.00"
-              min="0"
-              step="0.1"
-              className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none"
-            />
-          </div>
-
-          {/* Image Upload */}
-          <div className="col-span-2">
-            <label className="text-xs text-gray-500">Image du offre</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={e => {
-                const file = e.target.files[0];
-                if (file) {
-                  setData(p => ({ ...p, imageFile: file, imagePreview: URL.createObjectURL(file) }));
-                }
-              }}
-              className="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-orange-400 outline-none"
-            />
-            {data.imagePreview && (
-              <div className="mt-2">
-                <img
-                  src={data.imagePreview}
-                  alt="Preview"
-                  className="w-32 h-32 object-cover rounded border"
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="col-span-2 flex justify-end gap-3 mt-2">
-            <button onClick={onCancel} className="px-5 py-2 rounded-lg border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors">
+          <div className="col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t">
+            <button onClick={onCancel} className="px-6 py-2 rounded-xl border border-gray-200 text-gray-600 text-sm font-bold hover:bg-gray-50 transition-colors">
               Annuler
             </button>
-            <button onClick={onConfirm} className="px-5 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition-colors">
-              <Check size={15} className="inline mr-1" /> {confirmLabel}
+            <button onClick={onConfirm} className="px-6 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 text-white text-sm font-bold shadow-md shadow-orange-100 transition-all">
+              <Check size={16} className="inline mr-1" /> {confirmLabel}
             </button>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+  </div>
+);
 
 const emptyOffre = {
   nom: "", categorie: "", description: "", prix: "", prixAncien: "", image: "", restaurant: ""
@@ -201,56 +123,75 @@ export default function GestionOffres() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newOffre, setNewOffre] = useState({ ...emptyOffre });
   const [deletingOffre, setDeletingOffre] = useState(null);
-  const [toasts, setToasts] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/restaurant/")
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setRestaurants(data);
-        } else {
+    api.get("/restaurant/mes-restaurants")
+      .then(res => setRestaurants(res.data))
+      .catch((err) => {
+          console.error(err);
           setRestaurants([]);
-        }
-      })
-      .catch(() => setRestaurants([]));
+      });
   }, []);
 
-  const addToast = (message) => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, message }]);
-    setTimeout(() => removeToast(id), 4000);
+  const addToast = (message, icon = 'success') => {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      icon: icon,
+      title: message
+    });
   };
-  const removeToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
 
   const fetchOffres = async () => {
-    const res = await fetch("http://localhost:5000/api/offre/liste");
-    const data = await res.json();
-    setOffres(data);
+    try {
+      const res = await api.get("/offre/mes-offres");
+      setOffres(res.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => { fetchOffres(); }, []);
 
   const ajouterOffre = async () => {
-    if (!newOffre.nom || !newOffre.prix || !newOffre.restaurant) return;
-    await fetch("http://localhost:5000/api/offre/ajouter", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newOffre),
-    });
-    fetchOffres();
-    setNewOffre({ ...emptyOffre });
-    setShowAddForm(false);
-    addToast("Offre ajoutée avec succès");
+    if (!newOffre.nom || !newOffre.prix || !newOffre.restaurant) {
+        return addToast("Veuillez remplir les champs obligatoires", "warning");
+    }
+    try {
+      await api.post("/offre/ajouter", newOffre);
+      fetchOffres();
+      setNewOffre({ ...emptyOffre });
+      setShowAddForm(false);
+      addToast("Offre ajoutée avec succès");
+    } catch (err) {
+      addToast("Erreur lors de l'ajout", "error");
+    }
   };
 
-  const supprimerOffre = async () => {
-    const offre = deletingOffre;
-    await fetch(`http://localhost:5000/api/offre/${offre._id}`, { method: "DELETE" });
-    fetchOffres();
-    setDeletingOffre(null);
-    addToast("Suppression effectuée avec succès");
+  const supprimerOffre = async (offre) => {
+    const result = await Swal.fire({
+      title: 'Supprimer cette offre ?',
+      text: "Cette action est irréversible !",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f97316',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui, supprimer !'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/offre/${offre._id}`);
+        fetchOffres();
+        addToast("Offre supprimée avec succès");
+      } catch (err) {
+        addToast("Erreur lors de la suppression", "error");
+      }
+    }
   };
 
   const startEdit = (offre) => {
@@ -260,29 +201,25 @@ export default function GestionOffres() {
       categorie: offre.categorie,
       description: offre.description,
       prix: offre.prix,
-      prixAncien: offre.prixAncien || "",
-      image: offre.image || "",
-      restaurant: offre.restaurant,
+      restaurant: offre.restaurant._id || offre.restaurant,
     });
   };
 
   const saveEdit = async () => {
-    await fetch(`http://localhost:5000/api/offre/${editingOffre._id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(editData),
-    });
-    fetchOffres();
-    setEditingOffre(null);
-    addToast("Modification enregistrée avec succès");
+    try {
+      await api.put(`/offre/${editingOffre._id}`, editData);
+      fetchOffres();
+      setEditingOffre(null);
+      addToast("Modification enregistrée !");
+    } catch (err) {
+      addToast("Erreur lors de la modification", "error");
+    }
   };
 
   
 
   return (
     <>
-      <Toast toasts={toasts} removeToast={removeToast} />
-
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-8">
         <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg overflow-hidden">
 
@@ -315,12 +252,6 @@ export default function GestionOffres() {
 
           {/* Table */}
           <div className="relative">
-            {deletingOffre && (
-              <>
-                <div className="fixed inset-0 bg-black/40 z-40" />
-                <DeleteModal offre={deletingOffre} onConfirm={supprimerOffre} onCancel={() => setDeletingOffre(null)} />
-              </>
-            )}
             {editingOffre && (
               <>
                 <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setEditingOffre(null)} />
@@ -330,7 +261,7 @@ export default function GestionOffres() {
                   onConfirm={saveEdit}
                   onCancel={() => setEditingOffre(null)}
                   title="Modifier l'offre"
-                  confirmLabel="Valider"
+                  confirmLabel="Mettre à jour"
                   restaurants={restaurants}
                 />
               </>
@@ -358,11 +289,11 @@ export default function GestionOffres() {
                             <img
                               src={`http://localhost:5000/uploads/${offre.image}`}
                               alt={offre.nom}
-                              className="w-12 h-12 rounded-lg object-cover border border-gray-100"
+                              className="w-12 h-12 rounded-lg object-cover border border-gray-100 shadow-sm"
                             />
                           ) : (
-                            <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-                              <Image size={18} className="text-gray-300" />
+                            <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center border border-dashed border-gray-200">
+                              <ImageIcon size={18} className="text-gray-300" />
                             </div>
                           )}
                         </td>
@@ -381,7 +312,9 @@ export default function GestionOffres() {
                           </span>
                         </td>
                         {/* Restaurant */}
-                        <td className="px-5 py-3 text-gray-600">{offre.restaurant || "—"}</td>
+                        <td className="px-5 py-3 text-gray-700 font-medium">
+                            {offre.restaurant?.nom || "—"}
+                        </td>
                         {/* Prix */}
                         <td className="px-5 py-3">
                           <div className="flex flex-col">
@@ -395,11 +328,11 @@ export default function GestionOffres() {
                         {/* Actions */}
                         <td className="px-5 py-3">
                           <div className="flex gap-2">
-                            <button onClick={() => startEdit(offre)} className="flex items-center gap-1.5 bg-blue-50 hover:bg-blue-500 text-blue-500 hover:text-white px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors">
-                              <Pencil size={13} /> Modifier
+                            <button onClick={() => setEditingOffre(offre)} className="flex items-center gap-1.5 bg-blue-50 hover:bg-blue-500 text-blue-500 hover:text-white px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors">
+                              <Pencil size={13} />
                             </button>
-                            <button onClick={() => setDeletingOffre(offre)} className="flex items-center gap-1.5 bg-orange-50 hover:bg-orange-500 text-orange-500 hover:text-white px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors">
-                              <Trash2 size={13} /> Supprimer
+                            <button onClick={() => supprimerOffre(offre)} className="flex items-center gap-1.5 bg-orange-50 hover:bg-orange-500 text-orange-500 hover:text-white px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors">
+                              <Trash2 size={13} />
                             </button>
                           </div>
                         </td>
