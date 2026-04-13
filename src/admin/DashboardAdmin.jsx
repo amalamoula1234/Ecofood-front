@@ -2,6 +2,7 @@ import { useState } from "react";
 import GestionUsers from "./GestionUsers";
 import GestionRestaurants from "./GestionRestaurants";
 import GestionCommandes from "./GestionCommandes";
+import GestionAvis from "./GestionAvis";
 import NotificationPanel from "../components/NotificationPanel";
 import { PiForkKnifeFill } from "react-icons/pi";
 import Swal from 'sweetalert2';
@@ -32,6 +33,11 @@ const icons = {
             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" ry="1" /><path d="M9 14h6" /><path d="M9 18h6" /><path d="M9 10h6" />
         </svg>
     ),
+    avis: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+        </svg>
+    ),
 };
 
 const navMain = [
@@ -39,6 +45,7 @@ const navMain = [
     { label: "Utilisateurs", icon: icons.users },
     { label: "Restaurants", icon: icons.artisans },
     { label: "Commandes", icon: icons.orders },
+    { label: "Avis", icon: icons.avis },
 ];
 
 export default function DashboardAdmin() {
@@ -138,6 +145,7 @@ export default function DashboardAdmin() {
                     {activeNav === "Utilisateurs" && <GestionUsers />}
                     {activeNav === "Restaurants" && <GestionRestaurants />}
                     {activeNav === "Commandes" && <GestionCommandes />}
+                    {activeNav === "Avis" && <GestionAvis />}
                              </main>
 
             </div>
