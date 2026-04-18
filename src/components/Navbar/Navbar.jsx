@@ -50,7 +50,7 @@ const Navbar = () => {
             </Link>
           </li>
         </ul>
-          
+
 
         {/* NAV ACTION */}
         <div className='flex items-center gap-x-5 md:gap-x-7'>
@@ -79,11 +79,6 @@ const Navbar = () => {
             </Link>
           )}
 
-          {/* PANIER */}
-          <Link to="/cart" className='text-zinc-800 hover:text-orange-500 text-2xl transition-colors'>
-            <IoCart />
-          </Link>
-
           {/* HAMBURGER MOBILE */}
           <button
             className='md:hidden text-3xl text-zinc-800 cursor-pointer focus:outline-none'
@@ -98,9 +93,8 @@ const Navbar = () => {
 
       {/* MOBILE MENU  */}
       <div
-        className={`md:hidden fixed top-16 left-0 right-0 bg-white/95 backdrop-blur-lg shadow-lg transition-all duration-300 ease-in-out z-40 overflow-hidden ${
-          showOffre ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
-        }`}
+        className={`md:hidden fixed top-16 left-0 right-0 bg-white/95 backdrop-blur-lg shadow-lg transition-all duration-300 ease-in-out z-40 overflow-hidden ${showOffre ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+          }`}
       >
         <ul className="flex flex-col items-center gap-y-6 py-8 px-6">
           <li>
@@ -124,8 +118,8 @@ const Navbar = () => {
             </Link>
           </li>
 
-         
-          
+
+
           {/* Search mobile */}
           <li className='w-full max-w-xs'>
             <div className='flex border-2 border-orange-500 rounded-full overflow-hidden'>

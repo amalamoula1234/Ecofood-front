@@ -3,6 +3,7 @@ import GestionUsers from "./GestionUsers";
 import GestionRestaurants from "./GestionRestaurants";
 import GestionCommandes from "./GestionCommandes";
 import GestionAvis from "./GestionAvis";
+import AdminStats from "./AdminStats";
 import NotificationPanel from "../components/NotificationPanel";
 import { PiForkKnifeFill } from "react-icons/pi";
 import Swal from 'sweetalert2';
@@ -140,8 +141,8 @@ export default function DashboardAdmin() {
                 </aside>
 
                 {/* MAIN */}
-                <main className="flex-1 overflow-y-auto p-10 flex flex-col gap-7">
-                    {activeNav === "Dashboard" && <div className="text-gray-700 text-xl">Bienvenue, {user.nom}!</div>}
+                <main className="flex-1 overflow-y-auto p-10 flex flex-col gap-7 bg-gray-50/50">
+                    {activeNav === "Dashboard" && <AdminStats />}
                     {activeNav === "Utilisateurs" && <GestionUsers />}
                     {activeNav === "Restaurants" && <GestionRestaurants />}
                     {activeNav === "Commandes" && <GestionCommandes />}
