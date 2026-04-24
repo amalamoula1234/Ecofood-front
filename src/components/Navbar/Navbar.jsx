@@ -108,8 +108,8 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link to="/offre" onClick={toggleOffre} className='font-bold text-lg text-zinc-800 hover:text-orange-500 transition-colors'>
-              Offre
+            <Link to="/restaurant" onClick={toggleOffre} className='font-bold text-lg text-zinc-800 hover:text-orange-500 transition-colors'>
+              Restaurant
             </Link>
           </li>
           <li>

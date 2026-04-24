@@ -1,6 +1,5 @@
 import React from 'react'
-import font from "../../assets/font.webp";
-import Button from '../Button/Button'
+import hero from "../../assets/hero.jpg";
 
 const Hero = () => {
     return (
@@ -9,7 +8,7 @@ const Hero = () => {
             {/* BACKGROUND IMAGE */}
             <div className='absolute inset-0 z-0'>
                 <img
-                    src={font}
+                    src={hero}
                     alt="Hero Background"
                     className='w-full h-full object-cover object-center'
                 />
@@ -39,13 +38,7 @@ const Hero = () => {
                         un sourire.
                     </span>
                 </h1>
-                {/* TEXTE S8IR W RGIG - Centré */}
-                <p className='text-gray-300 text-sm md:text-base font-light max-w-md leading-relaxed tracking-wide opacity-90'>
-                    Découvrez des produits frais d'exception, préparés avec amour et servis avec passion pour vous faire sourire.                </p>
-
-                <div className='mt-4'>
-                    <Button content="Shop Now" />
-                </div>
+              
 
             </div>
 

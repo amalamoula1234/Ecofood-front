@@ -18,7 +18,7 @@ const Footer = () => {
   ];
 
   const footerLinks = [
-    { title: "Navigation", links: ["Home", "About Us", "Menu", "Contact"] },
+    { title: "Navigation", links: ["Home", "About Us", "restaurant", "Contact"] },
   ];
 
   return (

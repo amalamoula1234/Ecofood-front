@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { 
-  Trash2, Pencil, Plus, X, Check, Settings2, Bell, Tag, 
-  Image as ImageIcon, Leaf, Clock, ShoppingCart, DollarSign 
+import {
+  Trash2, Pencil, Plus, X, Check, Settings2, Bell, Tag,
+  Image as ImageIcon, Leaf, Clock, ShoppingCart, DollarSign
 } from "lucide-react";
 import api from "../api/axios";
 import Swal from "sweetalert2";
@@ -62,21 +62,58 @@ export default function GestionOffres() {
   };
 
   const handleSave = async (e) => {
-    e.preventDefault();
-    try {
-      if (editingOffre) {
-        await api.put(`/offre/${editingOffre._id}`, formData);
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Offre mise à jour', showConfirmButton: false, timer: 2000 });
-      } else {
-        await api.post("/offre/ajouter", formData);
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Offre créée', showConfirmButton: false, timer: 2000 });
-      }
-      setShowForm(false);
-      fetchOffres();
-    } catch (err) {
-      Swal.fire("Erreur", "Opération échouée", "error");
+  e.preventDefault();
+
+  try {
+    if (editingOffre) {
+      await api.put(`/offre/${editingOffre._id}`, {
+        nom: formData.nom,
+        categorie: formData.categorie,
+        description: formData.description,
+        prix: formData.prix,
+        prixAncien: formData.prixAncien,
+        image: "default.png",
+        restaurant: formData.restaurant
+      });
+
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Offre mise à jour',
+        showConfirmButton: false,
+        timer: 2000
+      });
+
+    } else {
+      await api.post("/offre/ajouter", {
+        nom: formData.nom,
+        categorie: formData.categorie,
+        description: formData.description,
+        prix: formData.prix,
+        prixAncien: formData.prixAncien,
+        image: "default.png",
+        restaurant: formData.restaurant
+      });
+
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Offre créée',
+        showConfirmButton: false,
+        timer: 2000
+      });
     }
-  };
+
+    setShowForm(false);
+    fetchOffres();
+
+  } catch (err) {
+    Swal.fire("Erreur", "Opération échouée", "error");
+    console.log(err);
+  }
+};
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
@@ -104,18 +141,17 @@ export default function GestionOffres() {
 
   return (
     <div className="flex flex-col gap-8 animate-in slide-in-from-bottom-4 duration-500">
-      
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-black text-gray-900 font-syne tracking-tight">Mes Flash Offers</h1>
           <p className="text-gray-400 text-xs font-medium">Gérez votre inventaire anti-gaspillage.</p>
         </div>
-        
-        <button 
+
+        <button
           onClick={() => handleOpenForm()}
-          className="flex items-center justify-center gap-2 bg-gray-900 text-white px-5 py-3 rounded-2xl font-bold text-xs hover:bg-orange-600 transition-all duration-300 shadow-lg shadow-gray-200 active:scale-95"
-        >
+          className="flex items-center justify-center gap-2 bg-orange-500 text-white px-5 py-3 rounded-2xl font-bold text-xs hover:bg-orange-600 transition-all duration-300 shadow-lg shadow-gray-200 active:scale-95"        >
           <Plus size={16} strokeWidth={3} />
           <span>Nouvelle Offre</span>
         </button>
@@ -128,9 +164,9 @@ export default function GestionOffres() {
             {/* Image Container */}
             <div className={`relative h-40 w-full bg-gray-50 flex items-center justify-center overflow-hidden`}>
               {offre.image ? (
-                <img 
-                  src={`http://localhost:5000/uploads/${offre.image}`} 
-                  alt={offre.nom} 
+                <img
+                  src={`http://localhost:5000/uploads/${offre.image}`}
+                  alt={offre.nom}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               ) : (
@@ -148,7 +184,7 @@ export default function GestionOffres() {
               </div>
               <h3 className="text-lg font-black text-gray-900 mb-1 font-syne group-hover:text-orange-600 transition-colors line-clamp-1">{offre.nom}</h3>
               <p className="text-gray-400 text-xs leading-relaxed line-clamp-2 mb-6 h-8">{offre.description}</p>
-              
+
               <div className="flex items-center justify-between pt-5 border-t border-gray-50">
                 <div className="flex flex-col">
                   <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Prix Flash</span>
@@ -157,20 +193,20 @@ export default function GestionOffres() {
                     {offre.prixAncien && <span className="text-[10px] text-gray-300 line-through">{offre.prixAncien} TD</span>}
                   </div>
                 </div>
-                
+
                 <div className="flex gap-2">
-                   <button 
-                     onClick={() => handleOpenForm(offre)}
-                     className="w-11 h-11 flex items-center justify-center bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded-2xl transition-all duration-300"
-                   >
-                     <Pencil size={18} />
-                   </button>
-                   <button 
-                     onClick={() => handleDelete(offre._id)}
-                     className="w-11 h-11 flex items-center justify-center bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-2xl transition-all duration-300"
-                   >
-                     <Trash2 size={18} />
-                   </button>
+                  <button
+                    onClick={() => handleOpenForm(offre)}
+                    className="w-11 h-11 flex items-center justify-center bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded-2xl transition-all duration-300"
+                  >
+                    <Pencil size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(offre._id)}
+                    className="w-11 h-11 flex items-center justify-center bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-2xl transition-all duration-300"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </div>
             </div>
@@ -178,7 +214,7 @@ export default function GestionOffres() {
         ))}
 
         {/* Empty State / Add Card */}
-        <div 
+        <div
           onClick={() => handleOpenForm()}
           className="bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center p-8 cursor-pointer hover:bg-orange-50 hover:border-orange-200 transition-all duration-300 group min-h-[300px]"
         >
@@ -193,7 +229,7 @@ export default function GestionOffres() {
       {showForm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setShowForm(false)} />
-          <form 
+          <form
             onSubmit={handleSave}
             className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300"
           >
@@ -206,55 +242,55 @@ export default function GestionOffres() {
               <div className="flex flex-col gap-4">
                 <div>
                   <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Détails</label>
-                  <input 
+                  <input
                     required
                     placeholder="Nom de l'offre"
                     className="w-full h-11 bg-gray-50 rounded-xl px-5 text-sm font-medium border border-transparent focus:bg-white focus:border-orange-500 outline-none transition-all"
                     value={formData.nom}
-                    onChange={e => setFormData({...formData, nom: e.target.value})}
+                    onChange={e => setFormData({ ...formData, nom: e.target.value })}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <select 
+                  <select
                     required
                     className="h-11 bg-gray-50 rounded-xl px-5 text-sm font-medium border border-transparent focus:bg-white focus:border-orange-500 outline-none transition-all appearance-none"
                     value={formData.categorie}
-                    onChange={e => setFormData({...formData, categorie: e.target.value})}
+                    onChange={e => setFormData({ ...formData, categorie: e.target.value })}
                   >
                     <option value="">Catégorie</option>
                     {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
-                  <select 
+                  <select
                     required
                     className="h-11 bg-gray-50 rounded-xl px-5 text-sm font-medium border border-transparent focus:bg-white focus:border-orange-500 outline-none transition-all appearance-none"
                     value={formData.restaurant}
-                    onChange={e => setFormData({...formData, restaurant: e.target.value})}
+                    onChange={e => setFormData({ ...formData, restaurant: e.target.value })}
                   >
                     <option value="">Mon Restaurant</option>
                     {restaurants.map(r => <option key={r._id} value={r._id}>{r.nom}</option>)}
                   </select>
                 </div>
 
-                <textarea 
+                <textarea
                   required
                   placeholder="Description de l'offre (ingrédients, saveurs...)"
                   className="w-full bg-gray-50 rounded-xl p-5 text-sm font-medium border border-transparent focus:bg-white focus:border-orange-500 outline-none transition-all h-24 resize-none"
                   value={formData.description}
-                  onChange={e => setFormData({...formData, description: e.target.value})}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
                 />
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest mb-1.5 block ml-1">Prix Promo</span>
                     <div className="relative">
-                      <input 
+                      <input
                         required
                         type="number"
                         placeholder="0.00"
                         className="w-full h-11 bg-gray-50 rounded-xl px-5 text-sm font-bold border border-transparent focus:bg-white focus:border-orange-500 outline-none transition-all"
                         value={formData.prix}
-                        onChange={e => setFormData({...formData, prix: e.target.value})}
+                        onChange={e => setFormData({ ...formData, prix: e.target.value })}
                       />
                       <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 uppercase">TD</span>
                     </div>
@@ -262,20 +298,28 @@ export default function GestionOffres() {
                   <div>
                     <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest mb-1.5 block ml-1">Prix Initial</span>
                     <div className="relative">
-                      <input 
+                      <input
                         type="number"
                         placeholder="0.00"
                         className="w-full h-11 bg-gray-50 rounded-xl px-5 text-sm font-bold border border-transparent focus:bg-white focus:border-orange-500 outline-none transition-all text-gray-400"
                         value={formData.prixAncien}
-                        onChange={e => setFormData({...formData, prixAncien: e.target.value})}
+                        onChange={e => setFormData({ ...formData, prixAncien: e.target.value })}
                       />
                       <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-300 uppercase">TD</span>
                     </div>
                   </div>
                 </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="w-full bg-gray-50 rounded-xl p-3 text-sm border"
+                  onChange={(e) =>
+                    setFormData({ ...formData, image: "default.png" })
+                  }
+                />
 
                 <div className="pt-4">
-                  <button 
+                  <button
                     type="submit"
                     className="w-full h-12 bg-orange-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-orange-600 shadow-lg shadow-orange-100 transition-all active:scale-95"
                   >

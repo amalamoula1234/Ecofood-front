@@ -30,37 +30,6 @@ function Toast({ toasts, removeToast }) {
   );
 }
 
-function DeleteModal({ user, onConfirm, onCancel }) {
-  return (
-    <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md">
-      <div className="bg-white rounded-xl shadow-2xl p-6 relative mx-4">
-        <button onClick={onCancel} className="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-          <X size={16} />
-        </button>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">
-          Suppression de l'utilisateur '{user.nom} {user.prenom}'
-        </h2>
-        <p className="text-orange-500 font-medium text-sm mb-6">
-          Êtes-vous sûr de vouloir supprimer cet utilisateur ?
-        </p>
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={onCancel}
-            className="px-5 py-2 rounded-lg border border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
-          >
-            Annuler
-          </button>
-          <button
-            onClick={onConfirm}
-            className="px-5 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition-colors"
-          >
-            Continuer
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function EditModal({ editData, setEditData, onConfirm, onCancel }) {
   return (
@@ -112,7 +81,6 @@ export default function GestionUsers() {
   const [editData, setEditData] = useState({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [newUser, setNewUser] = useState({ nom: "", prenom: "", email: "", mdp: "", telephone: "", role: "client" });
-  const [deletingUser, setDeletingUser] = useState(null);
   const [toasts, setToasts] = useState([]);
   const [showNewPassword, setShowNewPassword] = useState(false);
 
@@ -139,6 +107,34 @@ export default function GestionUsers() {
   };
 
   useEffect(() => { fetchUsers(); }, []);
+const handleDelete = async (user) => {
+  const result = await Swal.fire({
+    title: "Êtes-vous sûr ?",
+    text: "Cette action est irréversible !",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#f97316",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Oui, supprimer",
+    cancelButtonText: "Annuler",
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await api.delete(`/user/${user._id}`);
+      fetchUsers();
+
+      Swal.fire({
+        icon: "success",
+        title: "Supprimé !",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      Swal.fire("Erreur", "Suppression échouée", "error");
+    }
+  }
+};
 
   const ajouterUser = async () => {
     if (!newUser.nom || !newUser.email || !newUser.mdp) return;
@@ -153,17 +149,7 @@ export default function GestionUsers() {
     }
   };
 
-  const supprimerUser = async () => {
-    const user = deletingUser;
-    try {
-      await api.delete(`/user/${user._id}`);
-      fetchUsers();
-      setDeletingUser(null);
-      addToast("Suppression effectuée avec succès");
-    } catch (err) {
-      addToast("Erreur lors de la suppression", 'error');
-    }
-  };
+ 
 
   const startEdit = (user) => {
     setEditingUser(user);
@@ -274,10 +260,9 @@ export default function GestionUsers() {
 
           {/* Table */}
           <div className="relative">
-            {deletingUser && <DeleteModal user={deletingUser} onConfirm={supprimerUser} onCancel={() => setDeletingUser(null)} />}
             {editingUser && <EditModal editData={editData} setEditData={setEditData} onConfirm={saveEdit} onCancel={() => setEditingUser(null)} />}
 
-            <div className={`overflow-x-auto transition-opacity duration-200 ${deletingUser || editingUser ? "opacity-40 pointer-events-none" : ""}`}>
+            <div className={`overflow-x-auto transition-opacity duration-200 ${editingUser ? "opacity-40 pointer-events-none" : ""}`}>
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b-2 border-gray-100">
@@ -309,9 +294,12 @@ export default function GestionUsers() {
                           <button onClick={() => startEdit(user)} className="flex items-center gap-1.5 bg-blue-50 hover:bg-blue-500 text-blue-500 hover:text-white px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors">
                             <Pencil size={13} /> Modifier
                           </button>
-                          <button onClick={() => setDeletingUser(user)} className="flex items-center gap-1.5 bg-orange-50 hover:bg-orange-500 text-orange-500 hover:text-white px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors">
-                            <Trash2 size={13} /> Supprimer
-                          </button>
+                          <button
+  onClick={() => handleDelete(user)}
+  className="flex items-center gap-1.5 bg-orange-50 hover:bg-orange-500 text-orange-500 hover:text-white px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors"
+>
+  <Trash2 size={13} /> Supprimer
+</button>
                         </div>
                       </td>
                     </tr>

@@ -3,7 +3,7 @@ import React from "react";
 import img1 from "../../assets/process1.png";
 import img2 from "../../assets/process2.png";
 import img3 from "../../assets/process3.png";
-import aboutImg from "../../assets/about-platform.png";
+import aboutus from "../../assets/aboutus.jpg";
 
 const steps = [
   {
@@ -49,7 +49,7 @@ const About = () => {
         {/* Image */}
         <div className="flex justify-center">
           <img
-            src={aboutImg}
+            src={aboutus}
             alt="Présentation EcoFood"
             className="w-80 md:w-96 rounded-2xl shadow-lg"
           />
